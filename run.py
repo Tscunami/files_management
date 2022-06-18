@@ -5,7 +5,7 @@ import logging
 import os
 
 SOURCE = "/home/pi/"
-DESTINATION = "/media/pi/a0a9955f-24ea-4188-b832-917d7cee25be/home/"
+DESTINATION = "/media/pi/1/home/"
 EXCLUDE = "Downloads/"
 
 CURRENT_DAY = datetime.datetime.now()
@@ -39,7 +39,7 @@ def clone_files() -> None:
     # -exclude-from=
 
     logger.info("Started")
-    os.popen(f"sudo rsync -autp --partial --delete --exclude '{EXCLUDE}' {SOURCE} {DESTINATION}")
+    os.popen(f"sudo rsync -autp --partial --delete --exclude='{EXCLUDE}' {SOURCE} {DESTINATION}")
     logger.info("Successfully completed")
 
 
