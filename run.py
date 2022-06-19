@@ -1,12 +1,13 @@
+
 """Script to mirror my home directory on raspberry pi to usb disk"""
 
 import datetime
 import logging
 import os
 
-SOURCE = "/home/pi/"
-DESTINATION = "/media/pi/1/home/"
-EXCLUDE = "Downloads/"
+SOURCE = "/"
+DESTINATION = "/media/pi/1/backup/"
+EXCLUDE = "/home/pi/Downloads/"
 
 CURRENT_DAY = datetime.datetime.now()
 WORKING_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -36,10 +37,22 @@ def clone_files() -> None:
     # --delete also remove deleted filed in destination (like cloning SOURCE)
     # -t, --times preserve modification time
     # -p, --perms preserve permissions
+    # -o preserve same owner
+    # -g preserve same group
     # -exclude-from=
 
     logger.info("Started")
-    os.popen(f"sudo rsync -autp --partial --delete --exclude='{EXCLUDE}' {SOURCE} {DESTINATION}")
+    
+    # Backup crontab file
+    os.popopen("crontab -l > /home/pi/cron_scripts/cronjobs") 
+    
+    # Backup HOME folder without Downloads
+    HOME = "home/pi/"
+    os.popen(f"sudo rsync -autogp --partial --delete --exclude='{EXCLUDE}' {SOURCE}{HOME} {DESTINATION}{HOME}")
+    
+    # Backup /etc/update-motd.d folder
+    MOTD = "etc/update-motd.d/"
+    os.popen(f"sudo rsync -autogp --partial --delete {SOURCE}{MOTD} {DESTINATION}{MOTD}")
     logger.info("Successfully completed")
 
 
